@@ -1,6 +1,6 @@
 libtk8.6
 tkinter
+tkinter.ttk
+tkinter.font
 numpy
 pillow
-search
-streamlit
