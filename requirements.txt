@@ -4,7 +4,6 @@ Pillow
 plotly
 streamlit
 streamlit_option_menu
-libtk8.6
 tkinter
 tkinter.ttk
 tkinter.font
