@@ -3,39 +3,55 @@ import tkinter.ttk as ttk
 import tkinter.font as tkFont
 import numpy as np
 import time
+from PIL import Image, ImageTk
 from search import *
 
 thuduc_map = UndirectedGraph(dict(
     BinhChieu=dict(TamBinh=180, BinhPhuoc=374),
-    TamBinh=dict(TamPhu=108),
-    BinhPhuoc=dict(AnLoiDong=210, TamPhu=240),
-    TamPhu=dict(LinhTay=180, LinhDung=160, AnLoiDong=340),
-    AnLoiDong=dict(LinhDung=290),
-    LinhTay=dict(LinhTrung=260, LinhChieu=112, LinhDung=190),
-    LinhDung=dict(TruongTho=170),
-    LinhTrung=dict(LinhXuan=200, LinhChieu=206),
+    TamBinh=dict(BinhPhuoc=234, TamPhu=108),
+    BinhPhuoc=dict(TamPhu=210, AnLoiDong=208),
+    TamPhu=dict(LinhTay=140, LinhDong=218, AnLoiDong=320),
+    AnLoiDong=dict(LinhDong=291),
+    LinhTay=dict(LinhTrung=235, LinhChieu=110, LinhDong=175),
+    LinhDong=dict(TruongTho=170),
+    LinhTrung=dict(LinhXuan=220, LinhChieu=206),
     LinhChieu=dict(BinhTho=108, TruongTho=210),
     TruongTho=dict(BinhTho=140)))
 
 thuduc_map.locations = dict(
-    BinhChieu=(560-400, 800-200+160), TamBinh=(640-400, 800-360+200), BinhPhuoc=(460-400, 800-560+200),
-    TamPhu=(680-400, 800-460+200), AnLoiDong=(520-400, 800-760+200), LinhTay=(860-400, 800-440+200),
-    LinhDung=(760-400, 800-600+200), LinhTrung=(1120-400, 800-420+200), LinhXuan=(1040-400, 800-240+200),
-    LinhChieu=(940-400, 800-520+200), TruongTho=(880-400, 800-720+200), BinhTho=(980-400, 800-620+200)
+    BinhChieu=(190, 760), TamBinh=(240, 640), BinhPhuoc=(90, 440),
+    TamPhu=(280, 540), AnLoiDong=(120, 240), LinhTay=(460, 560),
+    LinhDong=(360, 430), LinhTrung=(700, 580), LinhXuan=(640, 760),
+    LinhChieu=(510, 500), TruongTho=(480, 310), BinhTho=(550, 410)
 )
 
 name_city = dict(
-    BinhChieu=(-80, 0), TamBinh=(20, 0), BinhPhuoc=(20, 0),
-    TamPhu=(20, 10), AnLoiDong=(20, 0), LinhTay=(20, -20),
-    LinhDung=(20, 0), LinhTrung=(0, -20), LinhXuan=(20, 0),
-    LinhChieu=(20, 0), TruongTho=(-90, 0), BinhTho=(20, 0)
+    BinhChieu=(-80, 0), TamBinh=(20, -10), BinhPhuoc=(-80, 20),
+    TamPhu=(0, -30), AnLoiDong=(20, 0), LinhTay=(-20, -20),
+    LinhDong=(-35, 35), LinhTrung=(-90, -20), LinhXuan=(-80, 0),
+    LinhChieu=(20, 10), TruongTho=(-90, 0), BinhTho=(5, -25)
 )
 
 name_city_display = {
     'BinhChieu': 'Bình Chiểu', 'TamBinh': 'Tam Bình', 'BinhPhuoc': 'Bình Phước',
-    'TamPhu': 'Tam Phú', 'AnLoiDong': 'An Lợi Đông', 'LinhTay': 'Linh Tây',
-    'LinhDung': 'Linh Đông', 'LinhTrung': 'Linh Trung', 'LinhXuan': 'Linh Xuân',
+    'TamPhu': 'Tam Phú', 'AnLoiDong': 'Bình Chánh', 'LinhTay': 'Linh Tây',
+    'LinhDong': 'Linh Đông', 'LinhTrung': 'Linh Trung', 'LinhXuan': 'Linh Xuân',
     'LinhChieu': 'Linh Chiểu', 'TruongTho': 'Trường Thọ', 'BinhTho': 'Bình Thọ'
+}
+
+node_info = {
+    'BinhChieu': {'size': '5.49km2', 'img': 'dest.png'},
+    'TamBinh': {'size': '3.41km2', 'img': ''},
+    'BinhTho': {'size': '1.08km2', 'img': 'dest.png'},
+    'BinhPhuoc': {'size': '7.66km2', 'img': 'dest.png'},
+    'TamPhu': {'size': '2.98km2', 'img': 'dest.png'},
+    'AnLoiDong': {'size': '6.26km2', 'img': 'dest.png'},
+    'LinhTay': {'size': '1.41km2', 'img': 'dest.png'},
+    'LinhDong': {'size': '2.59km2', 'img': 'dest.png'},
+    'LinhTrung': {'size': '6.81km2', 'img': 'dest.png'},
+    'LinhChieu': {'size': '1.3km2', 'img': 'dest.png'},
+    'TruongTho': {'size': '4.09km2', 'img': 'dest.png'},
+    'LinhXuan': {'size': '3.825km2', 'img': 'dest.png'}
 }
 
 dict_neighbors = thuduc_map.graph_dict
@@ -46,10 +62,13 @@ class App(tk.Tk):
 
         self.start_image = tk.PhotoImage(file='start.png').subsample(2)
         self.dest_image = tk.PhotoImage(file='dest.png').subsample(2)
+        image = Image.open("thuduc_map.png")
+        resized_image = image.resize((1377, 918), Image.BILINEAR)   #810 540 scale 1.7     
+        self.background_image = ImageTk.PhotoImage(resized_image)
 
-        self.title('Search GUI')
+        self.title('Tìm đường đi ngắn nhất')
         self.geometry('970x580')
-
+        
         # Vẽ bản đồ
         self.frame_map = tk.Frame(self)
         self.frame_map.grid(row=0, column=0)
@@ -101,10 +120,23 @@ class App(tk.Tk):
         lbl_distance.grid(row=6, column=0, padx=5, pady=5, sticky=tk.W)
         lbl_distance_val = ttk.Label(self.frame_menu, textvariable=self.distance_var)
         lbl_distance_val.grid(row=7, column=0, padx=5, pady=5, sticky=tk.W)
-
+        
+        self.info_var = tk.StringVar()
+        self.info_area = tk.StringVar()
+        self.info_img = tk.PhotoImage()        
+        lbl_info = ttk.Label(self.frame_menu, text='Thông tin', font=tkFont.Font(family="GoogleSans-Bold.otf", size=12, weight="bold"))
+        lbl_info.grid(row=8, column=0, padx=5, pady=5, sticky=tk.W)
+        lbl_info_val = ttk.Label(self.frame_menu, textvariable=None)
+        lbl_info_val.grid(row=9, column=0, padx=5, pady=5, sticky=tk.W)
+        lbl_info_area = ttk.Label(self.frame_menu, textvariable=None)
+        lbl_info_area.grid(row=10, column=0, padx=5, pady=5, sticky=tk.W)
+        lbl_info_img = ttk.Label(self.frame_menu, textvariable=None)
+        lbl_info_img.grid(row=11, column=0, padx=5, pady=5, sticky=tk.W)
+        
         self.menu_visible = True
         self.btn_toggle_menu = tk.Button(self, text="<", command=self.toggle_menu)
-        self.btn_toggle_menu.grid(row=0, column=0, sticky=tk.E, padx=(0, 0))
+        self.btn_toggle_menu.grid(row=0, column=0, sticky=tk.E, padx=(0, 0))    
+        
 
     def toggle_menu(self):
         if self.menu_visible:
@@ -118,19 +150,37 @@ class App(tk.Tk):
             self.geometry('970x580')
             self.menu_visible = True
 
+    def open_node_info(self, city):
+        self.info_area.set(node_info[city]['size'])
+        self.info_img = tk.PhotoImage(file=node_info[city]['img'])  
+        self.info_var.set(name_city_display[city])
+        lbl_info = ttk.Label(self.frame_menu, text='Thông tin', font=tkFont.Font(family="GoogleSans-Bold.otf", size=12, weight="bold"))
+        lbl_info.grid(row=8, column=0, padx=5, pady=5, sticky=tk.W)
+        lbl_info_val = ttk.Label(self.frame_menu, textvariable=self.info_var)
+        lbl_info_val.grid(row=9, column=0, padx=5, pady=5, sticky=tk.W)
+        lbl_info_area = ttk.Label(self.frame_menu, textvariable=self.info_area)
+        lbl_info_area.grid(row=10, column=0, padx=5, pady=5, sticky=tk.W)
+        lbl_info_img = ttk.Label(self.frame_menu, textvariable=self.info_img)
+        lbl_info_img.grid(row=11, column=0, padx=5, pady=5, sticky=tk.W)
+
     def ve_ban_do(self):
+        self.cvs_map.create_image(400, 300, image=self.background_image, tags='background')
         for key, neighbors in thuduc_map.graph_dict.items():
             for neighbor in neighbors:
                 x0, y0 = thuduc_map.locations[key]
                 x1, y1 = thuduc_map.locations[neighbor]
                 y0 = 800 - y0
                 y1 = 800 - y1
-                self.cvs_map.create_line(x0, y0, x1, y1, fill='lightgray', width=5)
+                self.cvs_map.create_line(x0, y0, x1, y1, fill='#E59600', width=5)
+                self.cvs_map.create_line(x0, y0, x1, y1, fill='#E5CE9E', width=4)
+
     def ve_toa_do(self):
         for key in thuduc_map.graph_dict:
             x0, y0 = thuduc_map.locations[key]
             y0 = 800 - y0
-            self.cvs_map.create_oval(x0-5, y0-5, x0+5, y0+5, fill='blue', outline='blue')
+            node_id = self.cvs_map.create_oval(x0-5, y0-5, x0+5, y0+5, fill='blue', outline='black')
+            
+            self.cvs_map.tag_bind(node_id, "<Button-1>", lambda event, city=key: self.open_node_info(city))
             
             dx, dy = name_city[key]
             city_name = name_city_display[key]
@@ -161,7 +211,7 @@ class App(tk.Tk):
         c = astar_search(thuduc_problem)
 
         self.lst_path = c.path()
-        total_distance = c.path_cost * 10  # Quy đổi khoảng cách
+        total_distance = c.path_cost * 10
         self.distance_var.set(f'{total_distance / 1000:.2f} km')
 
         for data in self.lst_path:
@@ -177,7 +227,7 @@ class App(tk.Tk):
                 if neighbor == self.lst_path[i + 1].state:
                     x1, y1 = thuduc_map.locations[neighbor]
                     y1 = 800 - y1
-                    self.cvs_map.create_line(x0, y0, x1, y1, fill='gray', width=5, tags='path')
+                    self.cvs_map.create_line(x0, y0, x1, y1, fill='gray', width=7, tags='path')
 
         x0, y0 = thuduc_map.locations[self.start]
         y0 = 800 - y0 - 15
@@ -199,7 +249,7 @@ class App(tk.Tk):
         x3 = x1 - arrow_length * np.cos(angle - np.pi / 6)
         y3 = y1 - arrow_length * np.sin(angle - np.pi / 6)
 
-        self.cvs_map.create_polygon(x1, y1, x2, y2, x3, y3, fill='red', tags='arrow')
+        self.cvs_map.create_polygon(x1, y1, x2, y2, x3, y3, fill='red', outline='black', tags='arrow')
 
         text = f'{remaining_distance:.0f} m'
         text_bbox = self.cvs_map.create_text(x1, y1 - 30, text=text, fill='black', tags='arrow')

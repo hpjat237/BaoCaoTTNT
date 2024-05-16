@@ -1,32 +1,15 @@
-    def ve_ban_do(self):
-        for key, neighbors in thuduc_map.graph_dict.items():
-            for neighbor in neighbors:
-                x0, y0 = thuduc_map.locations[key]
-                x1, y1 = thuduc_map.locations[neighbor]
-                y0 = 800 - y0
-                y1 = 800 - y1
-
-                # Tính toán góc của line
-                angle = degrees(atan2(y1 - y0, x1 - x0))
-
-                # Vẽ line
-                self.cvs_map.create_line(x0, y0, x1, y1, fill='gray')
-
-                # Vẽ mũi tên chỉ hướng
-                arrow_length = 10
-                arrow_degrees = 20
-                arrow1_x = x1 - arrow_length * cos(radians(angle + arrow_degrees))
-                arrow1_y = y1 - arrow_length * sin(radians(angle + arrow_degrees))
-                arrow2_x = x1 - arrow_length * cos(radians(angle - arrow_degrees))
-                arrow2_y = y1 - arrow_length * sin(radians(angle - arrow_degrees))
-
-                self.cvs_map.create_polygon(x1, y1, arrow1_x, arrow1_y, arrow2_x, arrow2_y, fill='gray', outline='gray')
-
-        for key in thuduc_map.graph_dict:
-            x0, y0 = thuduc_map.locations[key]
-            y0 = 800 - y0
-            self.cvs_map.create_oval(x0-5, y0-5, x0+5, y0+5, fill='blue', outline='blue')
-
-            dx, dy = name_city[key]
-            city_name = name_city_display[key]
-            self.cvs_map.create_text(x0+dx, y0+dy, text=city_name, anchor=tk.W, font=tkFont.Font(family="GoogleSans-Bold.otf", size=10, weight="bold"))
+    node_data = self.node_info_data.get(city, "Không có thông tin")
+        
+        info_text = f"Tên: {name_city_display[city]}\n"
+        for key, value in node_data.items():
+            info_text += f"{key}: {value}\n"
+        
+        self.info_var.set(info_text)
+        
+        lbl_info = ttk.Label(self.frame_menu, text='Thông tin', font=tkFont.Font(family="GoogleSans-Bold.otf", size=12, weight="bold"))
+        lbl_info.grid(row=8, column=0, padx=5, pady=5, sticky=tk.W)
+        
+        lbl_info_val = tk.Text(self.frame_menu, height=10, width=40, wrap=tk.WORD)
+        lbl_info_val.grid(row=9, column=0, padx=5, pady=5, sticky=tk.W)
+        lbl_info_val.insert(tk.END, info_text)
+        lbl_info_val.config(state=tk.DISABLED)
