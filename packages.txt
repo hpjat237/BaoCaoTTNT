@@ -1,1 +1,6 @@
 libtk8.6
+tkinter
+numpy
+pillow
+search
+streamlit
